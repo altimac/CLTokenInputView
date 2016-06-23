@@ -20,6 +20,7 @@
 
     CLTokenInputViewController *tokenVC = [[CLTokenInputViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:tokenVC];
+    nav.navigationBar.translucent = NO;
     self.window.rootViewController = nav;
 
     [self.window makeKeyAndVisible];

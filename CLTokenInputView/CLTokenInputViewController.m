@@ -13,7 +13,7 @@
 
 @interface CLTokenInputViewController ()
 
-@property (strong, nonatomic) NSArray *names;
+@property (strong, nonatomic) NSDictionary *tokenMap;
 @property (strong, nonatomic) NSArray *filteredNames;
 
 @property (strong, nonatomic) NSMutableArray *selectedNames;
@@ -28,13 +28,27 @@
     if (self) {
         // Custom initialization
         self.navigationItem.title = @"Token Input Test";
-        self.names = @[@"San Francisco",
-                       @"Pizza",
-                       @"Vegan",
-                       @"Burger",
-                       @"Best Burger", @"Paris", @"friend", @"drink", @"New York", @"hipster", @"broadway", @"show", @"france", @"hiking", @"competition", @"tel aviv", @"beach", @"animation"];
-        self.filteredNames = [self.names copy];
-        self.selectedNames = [NSMutableArray arrayWithCapacity:self.names.count];
+        self.tokenMap = @{@"San Francisco" : [UIColor blueColor],
+                          @"Pizza" : [UIColor orangeColor],
+                          @"Vegan" : [UIColor orangeColor],
+                          @"Burger" : [UIColor orangeColor],
+                          @"Best Burger" : [UIColor orangeColor],
+                          @"Paris" : [UIColor blueColor],
+                          @"friend" : [UIColor greenColor],
+                          @"drink" : [UIColor orangeColor],
+                          @"New York" : [UIColor blueColor],
+                          @"hipster" : [UIColor purpleColor],
+                          @"broadway"  : [UIColor blueColor],
+                          @"show" : [UIColor redColor],
+                          @"france" : [UIColor blueColor],
+                          @"hiking"  : [UIColor redColor],
+                          @"competition"  : [UIColor greenColor],
+                          @"tel aviv" : [UIColor blueColor],
+                          @"beach"  : [UIColor redColor],
+                          @"animation" :  [UIColor greenColor]
+                          };
+        self.filteredNames = [[self.tokenMap allKeys] copy];
+        self.selectedNames = [NSMutableArray array];
 
     }
     return self;
@@ -93,7 +107,7 @@
         tokenView.selectedTintColor = [UIColor lightGrayColor];
         tokenView.selectedBackgroundColor = [UIColor darkGrayColor];
         tokenView.tintColor = [UIColor whiteColor];
-        tokenView.backgroundColor = [UIColor orangeColor];
+        tokenView.backgroundColor = [(MKSToken*)token preferredColor];//[UIColor orangeColor];
     }
     else {
         tokenView.selectedTintColor = [UIColor darkTextColor];
@@ -118,10 +132,12 @@
 - (CLToken *)tokenInputView:(CLTokenInputView *)view tokenForText:(NSString *)text
 {
     __block MKSToken *token = nil;
-    [self.filteredNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *name = obj;
-        if([name localizedCaseInsensitiveCompare:text] == NSOrderedSame) {
-            token = [[MKSToken alloc] initWithDisplayText:name context:nil];
+    [self.tokenMap enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        NSString *tokenKey = key;
+        UIColor *color = obj;
+        if([tokenKey compare:text options:NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch] == NSOrderedSame) {
+            token = [[MKSToken alloc] initWithDisplayText:tokenKey context:nil];
+            token.preferredColor = color;
             *stop = YES;
         }
     }];
@@ -153,10 +169,12 @@
             separatorRange = [processedText rangeOfString:separator options:0 range:NSMakeRange(separatorRange.location+separatorRange.length, processedText.length-(separatorRange.location+separatorRange.length))];
  
             if(separatorRange.location == NSNotFound) {
+                NSString *tokenMapKey = nil;
                 // a sentence of one word
-                if([self _isEntireSentenceAToken:processedText]) {
+                if((tokenMapKey = [self _isEntireSentenceAToken:processedText])) {
                     lhsToken = [[MKSToken alloc] initWithDisplayText:processedText context:nil];
                     lhsToken.recognized = YES;
+                    lhsToken.preferredColor = self.tokenMap[tokenMapKey];
                     [tokens addObject:lhsToken];
                     
                     if([processedText isEqualToString:text]) {
@@ -169,9 +187,11 @@
                 NSString *lhs = [processedText substringWithRange:NSMakeRange(0, separatorRange.location)];
                 NSString *rhs = [processedText substringWithRange:NSMakeRange(separatorRange.location+separatorRange.length, processedText.length-(separatorRange.location+separatorRange.length))];
 
-                if([self _isEntireSentenceAToken:lhs]) {
+                NSString *tokenMapKey = nil;
+                if((tokenMapKey = [self _isEntireSentenceAToken:lhs])) {
                     lhsToken = [[MKSToken alloc] initWithDisplayText:lhs context:nil];
                     lhsToken.recognized = YES;
+                    lhsToken.preferredColor = self.tokenMap[tokenMapKey];
                     [tokens addObject:lhsToken];
                     
                     // remove lhs from processedText
@@ -179,9 +199,10 @@
                     separatorRange = NSMakeRange(0, 0); // reset
                 }
                 
-                if([self _isEntireSentenceAToken:rhs]) {
+                if(tokenMapKey = [self _isEntireSentenceAToken:rhs]) {
                 rhsToken = [[MKSToken alloc] initWithDisplayText:rhs context:nil];
                     rhsToken.recognized = YES;
+                    rhsToken.preferredColor = self.tokenMap[tokenMapKey];
                     [tokens addObject:rhsToken];
                     
                     // remove rhs from processedText
@@ -215,17 +236,18 @@
     return orderedRecognizedTokens;
 }
 
--(BOOL)_isEntireSentenceAToken:(NSString *)sentence {
-    __block BOOL isToken = NO;
-    [self.filteredNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *token = obj;
-        if([token compare:sentence options:NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch] == NSOrderedSame) {
-            isToken = YES;
+-(NSString *)_isEntireSentenceAToken:(NSString *)sentence {
+    __block NSString *token = nil;
+    [self.tokenMap enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        NSString *tokenKey = key;
+        UIColor *color = obj;
+        if([tokenKey compare:sentence options:NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch] == NSOrderedSame) {
+            token = tokenKey;
             *stop = YES;
         }
     }];
 
-    return isToken;
+    return token;
 }
 
 - (void)tokenInputViewDidEndEditing:(CLTokenInputView *)view

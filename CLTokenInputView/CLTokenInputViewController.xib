@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yVy-7A-UfW" customClass="MKSTokenInputView">
+                <view contentMode="scaleToFill" verticalHuggingPriority="252" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yVy-7A-UfW" customClass="MKSTokenInputView">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     <constraints>
@@ -26,7 +26,7 @@
                         <outlet property="delegate" destination="-1" id="bfo-i5-VlP"/>
                     </connections>
                 </view>
-                <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="ngG-oE-HZd">
+                <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="ngG-oE-HZd">
                     <rect key="frame" x="0.0" y="108" width="320" height="372"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
@@ -74,6 +74,7 @@ Cg
                 <constraint firstItem="yVy-7A-UfW" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="IXa-EX-P3L"/>
                 <constraint firstAttribute="bottom" secondItem="ngG-oE-HZd" secondAttribute="bottom" id="Ixl-wG-sGd"/>
                 <constraint firstAttribute="trailing" secondItem="uLk-uQ-cin" secondAttribute="trailing" constant="8" id="ToY-Bf-3nz"/>
+                <constraint firstItem="yVy-7A-UfW" firstAttribute="top" secondItem="1" secondAttribute="top" id="e9J-TC-Doy"/>
                 <constraint firstAttribute="trailing" secondItem="ngG-oE-HZd" secondAttribute="trailing" id="hBS-gg-k3X"/>
                 <constraint firstItem="ngG-oE-HZd" firstAttribute="top" secondItem="yVy-7A-UfW" secondAttribute="bottom" id="oxL-TX-yj7"/>
                 <constraint firstAttribute="bottom" secondItem="uLk-uQ-cin" secondAttribute="bottom" constant="8" id="vlW-Ry-466"/>
