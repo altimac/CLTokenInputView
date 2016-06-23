@@ -25,6 +25,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CLTokenInputView;
+@class CLTokenView;
 @protocol CLTokenInputViewDelegate <NSObject>
 
 @optional
@@ -45,9 +46,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)tokenInputViewShouldReturn:(CLTokenInputView *)view;
 
 /**
+ * Called when the text field has changed and a tokenizationCharacter (see tokenizationCharacter property) is being inserted/replaced at the given range. This is typically used to use space or comma as tokenization character but still allow them to be visible in the textfield. If not implemented, returns NO.
+ */
+-(BOOL)tokenInputView:(CLTokenInputView *)view shouldAllowTokenizationCharacterReplacement:(NSString *)tokenizationCharacter inRange:(NSRange)range;
+
+/**
  * Called when the text field text has changed. You should update your autocompleting UI based on the text supplied.
  */
 - (void)tokenInputView:(CLTokenInputView *)view didChangeText:(nullable NSString *)text;
+/**
+ * Called when a token is add added, but before the CLTokenView is displayed. You can typically customize the tokenView here.
+ */
+- (void)tokenInputView:(CLTokenInputView *)view willAddTokenView:(CLTokenView *)tokenView forToken:(CLToken *)token;
 /**
  * Called when a token has been added. You should use this opportunity to update your local list of selected items.
  */
@@ -57,11 +67,19 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)tokenInputView:(CLTokenInputView *)view didRemoveToken:(CLToken *)token;
 /** 
- * Called when the user attempts to press the Return key with text partially typed.
+ * Called when the user attempts to press the Return key or a tokenization character with text partially typed.
  * @return A CLToken for a match (typically the first item in the matching results),
  * or nil if the text shouldn't be accepted.
  */
 - (nullable CLToken *)tokenInputView:(CLTokenInputView *)view tokenForText:(NSString *)text;
+/**
+ * Called when the user attempts to press the Return key or a tokenization character with text partially typed.
+ * @return An NSArray of CLToken* for recognized tokens
+ * or nil/empty array if the text shouldn't be accepted.
+ * tokenForText: won't be called if delegates implements tokensForText:
+ */
+- (NSArray <CLToken*> *)tokenInputView:(CLTokenInputView *)view tokensForText:(NSString *)text;
+
 /**
  * Called when the view has updated its own height. If you are
  * not using Autolayout, you should use this method to update the
@@ -73,12 +91,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CLTokenInputView : UIView
 
+- (Class)tokenViewClass;
+
 @property (weak, nonatomic, nullable) IBOutlet NSObject <CLTokenInputViewDelegate> *delegate;
 /** An optional view that shows up presumably on the first line */
 @property (strong, nonatomic, nullable) UIView *fieldView;
 /** Option text which can be displayed before the first line (e.g. "To:") */
 @property (copy, nonatomic, nullable) IBInspectable NSString *fieldName;
 /** Color of optional */
+@property (strong, nonatomic, nullable) IBInspectable UIFont *fieldFont; // not IBInspectable compatible as of June 2016...
 @property (strong, nonatomic, nullable) IBInspectable UIColor *fieldColor;
 @property (copy, nonatomic, nullable) IBInspectable NSString *placeholderText;
 @property (strong, nonatomic, nullable) UIView *accessoryView;
@@ -103,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addToken:(CLToken *)token;
 - (void)removeToken:(CLToken *)token;
-- (nullable CLToken *)tokenizeTextfieldText;
+- (void)tokenizeTextfieldText;
 
 // Editing
 - (void)beginEditing;

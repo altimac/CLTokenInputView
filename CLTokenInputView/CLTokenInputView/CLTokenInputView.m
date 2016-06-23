@@ -10,11 +10,13 @@
 
 #import "CLBackspaceDetectingTextField.h"
 #import "CLTokenView.h"
+#import "MKSTokenView.h"
+#import "MKSToken.h"
 
 static CGFloat const HSPACE = 0.0;
 static CGFloat const TEXT_FIELD_HSPACE = 4.0; // Note: Same as CLTokenView.PADDING_X
 static CGFloat const VSPACE = 4.0;
-static CGFloat const MINIMUM_TEXTFIELD_WIDTH = 56.0;
+static CGFloat const MINIMUM_TEXTFIELD_WIDTH = 10;//56.0; // AH changed because I find this too conservative
 static CGFloat const PADDING_TOP = 10.0;
 static CGFloat const PADDING_BOTTOM = 10.0;
 static CGFloat const PADDING_LEFT = 8.0;
@@ -87,6 +89,11 @@ static void commonInit(CLTokenInputView *self)
     return self;
 }
 
+-(Class)tokenViewClass {
+    // AH meant to be overriden
+    return [CLTokenView class];
+}
+
 - (CGSize)intrinsicContentSize
 {
     return CGSizeMake(UIViewNoIntrinsicMetric, MAX(45, self.intrinsicContentHeight));
@@ -113,16 +120,23 @@ static void commonInit(CLTokenInputView *self)
     }
 
     [self.tokens addObject:token];
-    CLTokenView *tokenView = [[CLTokenView alloc] initWithToken:token font:self.textField.font];
+    CLTokenView *tokenView = [[[self tokenViewClass] alloc] initWithToken:token font:self.textField.font];
     if ([self respondsToSelector:@selector(tintColor)]) {
         tokenView.tintColor = self.tintColor;
     }
     tokenView.delegate = self;
     CGSize intrinsicSize = tokenView.intrinsicContentSize;
     tokenView.frame = CGRectMake(0, 0, intrinsicSize.width, intrinsicSize.height);
+    
+    if ([self.delegate respondsToSelector:@selector(tokenInputView:willAddTokenView:forToken:)]) {
+        [self.delegate tokenInputView:self willAddTokenView:tokenView forToken:token];
+    }
+    
     [self.tokenViews addObject:tokenView];
     [self addSubview:tokenView];
-    self.textField.text = @"";
+    //if(token.isRecognized) {
+        self.textField.text = @"";
+    //}
     if ([self.delegate respondsToSelector:@selector(tokenInputView:didAddToken:)]) {
         [self.delegate tokenInputView:self didAddToken:token];
     }
@@ -165,20 +179,41 @@ static void commonInit(CLTokenInputView *self)
     return [self.tokens copy];
 }
 
-- (CLToken *)tokenizeTextfieldText
+- (void)tokenizeTextfieldText
 {
-    CLToken *token = nil;
-    NSString *text = self.textField.text;
-    if (text.length > 0 &&
-        [self.delegate respondsToSelector:@selector(tokenInputView:tokenForText:)]) {
-        token = [self.delegate tokenInputView:self tokenForText:text];
-        if (token != nil) {
-            [self addToken:token];
-            self.textField.text = @"";
-            [self onTextFieldDidChange:self.textField];
+    // since we added tokenInputView:shouldAllowTokenizationCharacterReplacement:inRange: we get back those tokenization characters in text. We have to clean them if they are prefixing text!
+    NSString * unprefixedText = self.textField.text;
+    for (NSString *tokenizationCharacter in self.tokenizationCharacters) {
+        while([unprefixedText hasPrefix:tokenizationCharacter]) {
+            unprefixedText = [unprefixedText substringFromIndex:1];
         }
     }
-    return token;
+    
+    if (unprefixedText.length > 0) {
+        if([self.delegate respondsToSelector:@selector(tokenInputView:tokensForText:)]) {
+            NSArray *tokens = [self.delegate tokenInputView:self tokensForText:unprefixedText];
+            BOOL lastTokenIsRecognized = NO;
+            for (MKSToken *token in tokens) {
+                [self addToken:token];
+                lastTokenIsRecognized = token.isRecognized;
+            }
+            
+//            if(lastTokenIsRecognized) {
+                self.textField.text =  @"";
+//            }
+            [self onTextFieldDidChange:self.textField];
+        }
+        else if([self.delegate respondsToSelector:@selector(tokenInputView:tokenForText:)]) {
+            MKSToken *token = [self.delegate tokenInputView:self tokenForText:unprefixedText];
+            if (token != nil) {
+                [self addToken:token];
+//                if(token.isRecognized) {
+                    self.textField.text =  @"";
+//                }
+                [self onTextFieldDidChange:self.textField];
+            }
+        }
+    }
 }
 
 
@@ -351,8 +386,13 @@ static void commonInit(CLTokenInputView *self)
 {
     if (string.length > 0 && [self.tokenizationCharacters member:string]) {
         [self tokenizeTextfieldText];
-        // Never allow the change if it matches at token
-        return NO;
+        // AH: original code was to never allow the change if it matches at token
+        BOOL allowReplacement = NO;
+        if ([self.delegate respondsToSelector:@selector(tokenInputView:shouldAllowTokenizationCharacterReplacement:inRange:)]) {
+            allowReplacement = [self.delegate tokenInputView:self shouldAllowTokenizationCharacterReplacement:string inRange:range];
+        }
+
+        return allowReplacement;
     }
     return YES;
 }
@@ -363,7 +403,16 @@ static void commonInit(CLTokenInputView *self)
 - (void)onTextFieldDidChange:(id)sender
 {
     if ([self.delegate respondsToSelector:@selector(tokenInputView:didChangeText:)]) {
-        [self.delegate tokenInputView:self didChangeText:self.textField.text];
+        
+        // since we added tokenInputView:shouldAllowTokenizationCharacterReplacement:inRange: we get back those tokenization characters in text. We have to clean them if they are prefixing text!
+        NSString * unprefixedText = self.textField.text;
+        for (NSString *tokenizationCharacter in self.tokenizationCharacters) {
+            while([unprefixedText hasPrefix:tokenizationCharacter]) {
+                unprefixedText = [unprefixedText substringFromIndex:1];
+            }
+        }
+        
+        [self.delegate tokenInputView:self didChangeText:unprefixedText];
     }
 }
 
@@ -483,6 +532,12 @@ static void commonInit(CLTokenInputView *self)
 
 
 #pragma mark - (Optional Views)
+
+-(void)setFieldFont:(UIFont *)fieldFont
+{
+    _fieldFont = fieldFont;
+    self.textField.font = fieldFont;
+}
 
 - (void)setFieldName:(NSString *)fieldName
 {

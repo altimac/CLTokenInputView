@@ -28,12 +28,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic) BOOL selected;
 @property (assign, nonatomic) BOOL hideUnselectedComma;
 
+@property (strong, nonatomic) UIColor *selectedTintColor; // text, defaults to white
+@property (strong, nonatomic) UIColor *selectedBackgroundColor; // background, defaults to standard iOS blue
+@property (strong, nonatomic) UIColor *backgroundColor; // background, defaults to clear color
+// For iOS 6 compatibility, provide the setter tintColor
+- (void)setTintColor:(nullable UIColor *)tintColor; // text, defaults to iOS tint color (somewhat blue)
+
 - (id)initWithToken:(CLToken *)token font:(nullable UIFont *)font;
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated;
 
-// For iOS 6 compatibility, provide the setter tintColor
-- (void)setTintColor:(nullable UIColor *)tintColor;
 
 @end
 

@@ -30,8 +30,8 @@
     }
 
     CLToken *otherObject = (CLToken *)object;
-    if ([otherObject.displayText isEqualToString:self.displayText] &&
-        [otherObject.context isEqual:self.context]) {
+    if ([otherObject.displayText isEqualToString:self.displayText] /*&&
+        [otherObject.context isEqual:self.context] wrong test with nil context*/) {
         return YES;
     }
     return NO;
@@ -39,7 +39,7 @@
 
 - (NSUInteger)hash
 {
-    return self.displayText.hash ^ self.context.hash;
+    return self.displayText.hash; // wrong with nil context ^ self.context.hash;
 }
 
 @end

@@ -35,27 +35,39 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
 {
     self = [super initWithFrame:CGRectZero];
     if (self) {
-        UIColor *tintColor = [UIColor colorWithRed:0.0823f green:0.4941f blue:0.9843f alpha:1];
-        if ([self respondsToSelector:@selector(tintColor)]) {
-            tintColor = self.tintColor;
-        }
+        
+        self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+        self.backgroundView.backgroundColor = self.backgroundColor?self.backgroundColor:[UIColor clearColor];
+        self.backgroundView.layer.cornerRadius = 3.0;
+        [self addSubview:self.backgroundView];
+        self.backgroundView.hidden = NO;
+        
         self.label = [[UILabel alloc] initWithFrame:CGRectMake(PADDING_X, PADDING_Y, 0, 0)];
         if (font) {
             self.label.font = font;
         }
+        
+        UIColor *tintColor = nil;
+        if ([self respondsToSelector:@selector(tintColor)]) {
+            tintColor = self.tintColor;
+        }
+        if(tintColor == nil) {
+            tintColor = [UIColor darkTextColor];
+        }
+        
         self.label.textColor = tintColor;
         self.label.backgroundColor = [UIColor clearColor];
         [self addSubview:self.label];
 
         self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-        self.selectedBackgroundView.backgroundColor = tintColor;
+        self.selectedBackgroundView.backgroundColor = self.selectedBackgroundColor?self.selectedBackgroundColor:[UIColor blueColor];
         self.selectedBackgroundView.layer.cornerRadius = 3.0;
         [self addSubview:self.selectedBackgroundView];
         self.selectedBackgroundView.hidden = YES;
 
         self.selectedLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING_X, PADDING_Y, 0, 0)];
         self.selectedLabel.font = self.label.font;
-        self.selectedLabel.textColor = [UIColor whiteColor];
+        self.selectedLabel.textColor = self.selectedTintColor?self.selectedTintColor:[UIColor whiteColor];
         self.selectedLabel.backgroundColor = [UIColor clearColor];
         [self addSubview:self.selectedLabel];
         self.selectedLabel.hidden = YES;
@@ -95,14 +107,33 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
 
 #pragma mark - Tinting
 
+-(void)setBackgroundColor:(UIColor *)backgroundColor
+{
+    _backgroundColor = backgroundColor;
+    self.backgroundView.backgroundColor = _backgroundColor?_backgroundColor:[UIColor clearColor];
+    [self updateLabelAttributedText];
+}
 
 - (void)setTintColor:(UIColor *)tintColor
 {
     if ([UIView instancesRespondToSelector:@selector(setTintColor:)]) {
         super.tintColor = tintColor;
     }
-    self.label.textColor = tintColor;
-    self.selectedBackgroundView.backgroundColor = tintColor;
+    self.label.textColor = tintColor?tintColor:[UIColor darkTextColor];
+    [self updateLabelAttributedText];
+}
+
+-(void)setSelectedTintColor:(UIColor *)selectedTintColor
+{
+    _selectedTintColor = selectedTintColor;
+    self.selectedLabel.textColor = _selectedTintColor?_selectedTintColor:[UIColor whiteColor];
+    [self updateLabelAttributedText];
+}
+
+-(void)setSelectedBackgroundColor:(UIColor *)selectedBackgroundColor
+{
+    _selectedBackgroundColor = selectedBackgroundColor;
+    self.selectedBackgroundView.backgroundColor = _selectedBackgroundColor?_selectedBackgroundColor:[UIColor blueColor];
     [self updateLabelAttributedText];
 }
 
@@ -135,6 +166,8 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
     [self setSelected:selected animated:NO];
 }
 
+//TODO: handle color on selection / non selection on background, text and selected backgrtound and selected text !!
+//
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     if (_selected == selected) {

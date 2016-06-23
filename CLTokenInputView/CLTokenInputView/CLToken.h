@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** Used for storing anything that would be useful later on */
 @property (strong, nonatomic, nullable) NSObject *context;
 
+@property(assign, nonatomic, getter=isRecognized) BOOL recognized; // Helps handle with token are really pattern recognized and which are not. Defaults to NO.
 
 - (id)initWithDisplayText:(NSString *)displayText context:(nullable NSObject *)context;
 
