@@ -42,4 +42,8 @@
     return self.displayText.hash; // wrong with nil context ^ self.context.hash;
 }
 
+-(NSString *)description {
+    return [[super description] stringByAppendingFormat:@" - text:'%@'",self.displayText];
+}
+
 @end

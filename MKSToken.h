@@ -11,5 +11,6 @@
 @interface MKSToken : CLToken
 
 @property(assign, nonatomic) NSUInteger locationInText; // helps sorting, not really usefull except for internals
+@property(strong, nonatomic) UIColor *preferredColor; // defaults to nil
 
 @end

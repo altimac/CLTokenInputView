@@ -134,9 +134,9 @@ static void commonInit(CLTokenInputView *self)
     
     [self.tokenViews addObject:tokenView];
     [self addSubview:tokenView];
-    //if(token.isRecognized) {
+    if(token.isRecognized) {
         self.textField.text = @"";
-    //}
+    }
     if ([self.delegate respondsToSelector:@selector(tokenInputView:didAddToken:)]) {
         [self.delegate tokenInputView:self didAddToken:token];
     }
@@ -194,22 +194,24 @@ static void commonInit(CLTokenInputView *self)
             NSArray *tokens = [self.delegate tokenInputView:self tokensForText:unprefixedText];
             BOOL lastTokenIsRecognized = NO;
             for (MKSToken *token in tokens) {
-                [self addToken:token];
+                if(token.isRecognized) {
+                    [self addToken:token];
+                }
                 lastTokenIsRecognized = token.isRecognized;
             }
             
-//            if(lastTokenIsRecognized) {
+            if(lastTokenIsRecognized) {
                 self.textField.text =  @"";
-//            }
+            }
             [self onTextFieldDidChange:self.textField];
         }
         else if([self.delegate respondsToSelector:@selector(tokenInputView:tokenForText:)]) {
-            MKSToken *token = [self.delegate tokenInputView:self tokenForText:unprefixedText];
+            CLToken *token = [self.delegate tokenInputView:self tokenForText:unprefixedText];
             if (token != nil) {
                 [self addToken:token];
-//                if(token.isRecognized) {
+                if(token.isRecognized) {
                     self.textField.text =  @"";
-//                }
+                }
                 [self onTextFieldDidChange:self.textField];
             }
         }

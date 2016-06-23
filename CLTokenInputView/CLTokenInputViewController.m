@@ -32,7 +32,7 @@
                        @"Pizza",
                        @"Vegan",
                        @"Burger",
-                       @"Best Burger"];
+                       @"Best Burger", @"Paris", @"friend", @"drink", @"New York", @"hipster", @"broadway", @"show", @"france", @"hiking", @"competition", @"tel aviv", @"beach", @"animation"];
         self.filteredNames = [self.names copy];
         self.selectedNames = [NSMutableArray arrayWithCapacity:self.names.count];
 
@@ -43,22 +43,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    if (![self respondsToSelector:@selector(automaticallyAdjustsScrollViewInsets)]) {
-        self.tokenInputTopSpace.constant = 0.0;
-    }
+
     UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
     [infoButton addTarget:self action:@selector(onFieldInfoButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    self.tokenInputView.placeholderText = @"DO NOT USE";
-    self.tokenInputView.fieldName = @"Return only:";
-    self.tokenInputView.fieldView = infoButton;
-    //self.tokenInputView.placeholderText = @"Enter a name";
-    self.tokenInputView.accessoryView = [self contactAddButton];
-    self.tokenInputView.drawBottomBorder = YES;
     
-    self.secondTokenInputView.placeholderText = @"For Marks";
+    self.secondTokenInputView.placeholderText = @"Marks tests here...";
     self.secondTokenInputView.fieldFont = [UIFont fontWithName:@"Georgia" size:17];
-    self.secondTokenInputView.fieldName = NSLocalizedString(@", \" \", return:", nil);
+    //self.secondTokenInputView.fieldName = NSLocalizedString(@", \" \", return:", nil);
     self.secondTokenInputView.tokenizationCharacters = [NSSet setWithObjects:@",",@" ", nil];
     self.secondTokenInputView.drawBottomBorder = YES;
     self.secondTokenInputView.delegate = self;
@@ -71,15 +62,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    if (!self.tokenInputView.editing) {
-        [self.tokenInputView beginEditing];
-    }
-    [super viewDidAppear:animated];
-}
-
-
 #pragma mark - CLTokenInputViewDelegate
 
 -(BOOL)tokenInputView:(CLTokenInputView *)view shouldAllowTokenizationCharacterReplacement:(NSString *)tokenizationCharacter inRange:(NSRange)range
@@ -89,15 +71,19 @@
 
 - (void)tokenInputView:(CLTokenInputView *)view didChangeText:(NSString *)text
 {
-    if ([text isEqualToString:@""]){
-        //self.filteredNames = nil;
-        self.tableView.hidden = YES;
-    } else {
-        //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self contains[cd] %@", text];
-        //self.filteredNames = [self.names filteredArrayUsingPredicate:predicate];
-        self.tableView.hidden = NO;
-    }
-    [self.tableView reloadData];
+    // AH, I don't want tableview
+    self.tableView.hidden = YES;
+    return;
+    
+//    if ([text isEqualToString:@""]){
+//        //self.filteredNames = nil;
+//        self.tableView.hidden = YES;
+//    } else {
+//        //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self contains[cd] %@", text];
+//        //self.filteredNames = [self.names filteredArrayUsingPredicate:predicate];
+//        self.tableView.hidden = NO;
+//    }
+//    [self.tableView reloadData];
 }
 
 -(void)tokenInputView:(CLTokenInputView *)view willAddTokenView:(CLTokenView *)tokenView forToken:(CLToken *)token
@@ -146,10 +132,13 @@
 - (NSArray <CLToken*> *)tokenInputView:(CLTokenInputView *)view tokensForText:(NSString *)text
 {
     NSMutableSet <MKSToken*> *tokens = [NSMutableSet set];
-    
+    BOOL shouldSkipOtherTokenizationCharacters = NO;
     // FIXME: there is a bug with multiple tokenizationCharacters as we may add some token in wrong sequence. But this should be rare
     
     for(NSString *separator in view.tokenizationCharacters) {
+        
+        if(shouldSkipOtherTokenizationCharacters)  break;
+        
         NSString *processedText = [text copy];
        // NSRange lastFoundLHSToken = NSMakeRange(0, 0);
         NSRange separatorRange = NSMakeRange(0, 0);
@@ -169,6 +158,10 @@
                     lhsToken = [[MKSToken alloc] initWithDisplayText:processedText context:nil];
                     lhsToken.recognized = YES;
                     [tokens addObject:lhsToken];
+                    
+                    if([processedText isEqualToString:text]) {
+                        shouldSkipOtherTokenizationCharacters = YES; // we want to avoid testing other tokenizationCharacters since "best burger" will give "best burger" + "burger" tokens.
+                    }
                 }
             }
             else {
@@ -188,7 +181,7 @@
                 
                 if([self _isEntireSentenceAToken:rhs]) {
                 rhsToken = [[MKSToken alloc] initWithDisplayText:rhs context:nil];
-                    lhsToken.recognized = YES;
+                    rhsToken.recognized = YES;
                     [tokens addObject:rhsToken];
                     
                     // remove rhs from processedText
@@ -204,7 +197,7 @@
     NSMutableArray <MKSToken*> *orderedRecognizedTokens = [NSMutableArray array];
     
     if(tokens.count > 0) {
-        for (MKSToken *token in orderedRecognizedTokens) {
+        for (MKSToken *token in tokens) {
             NSRange range = [text rangeOfString:token.displayText options:NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch];
             token.locationInText = range.location;
             NSAssert(range.location != NSNotFound, @"A *recognized* token can't be found in original text!?");
@@ -243,13 +236,12 @@
 
 - (void)tokenInputViewDidBeginEditing:(CLTokenInputView *)view
 {
-    
     NSLog(@"token input view did begin editing: %@", view);
     //view.accessoryView = [self contactAddButton]; // AH: we can have an accessory view while editing, but I don't want it
-    [self.view removeConstraint:self.tableViewTopLayoutConstraint];
-    self.tableViewTopLayoutConstraint = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-    [self.view addConstraint:self.tableViewTopLayoutConstraint];
-    [self.view layoutIfNeeded];
+//    [self.view removeConstraint:self.tableViewTopLayoutConstraint];
+//    self.tableViewTopLayoutConstraint = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+//    [self.view addConstraint:self.tableViewTopLayoutConstraint];
+//    [self.view layoutIfNeeded];
 }
 
 
@@ -282,10 +274,7 @@
 
     NSString *name = self.filteredNames[indexPath.row];
     CLToken *token = [[CLToken alloc] initWithDisplayText:name context:nil];
-    if (self.tokenInputView.isEditing) {
-        [self.tokenInputView addToken:token];
-    }
-    else if(self.secondTokenInputView.isEditing){
+    if(self.secondTokenInputView.isEditing){
         [self.secondTokenInputView addToken:token];
     }
 }
