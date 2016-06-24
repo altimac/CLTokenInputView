@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, nullable) NSObject *context;
 
 @property(assign, nonatomic, getter=isRecognized) BOOL recognized; // Helps handle with token are really pattern recognized and which are not. Defaults to NO.
+@property(assign, nonatomic) NSUInteger locationInText; // helps sorting, not really usefull except for internals
+@property(strong, nonatomic) UIColor *preferredColor; // defaults to nil
 
 - (id)initWithDisplayText:(NSString *)displayText context:(nullable NSObject *)context;
 

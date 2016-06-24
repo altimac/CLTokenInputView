@@ -32,9 +32,6 @@
 		65B16BC218BC26C9003AA819 /* CLToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 65B16BC118BC26C9003AA819 /* CLToken.m */; };
 		65B16BC318BC26C9003AA819 /* CLToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 65B16BC118BC26C9003AA819 /* CLToken.m */; };
 		65E86F821C407E3A0029E724 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65E86F811C407E3A0029E724 /* LaunchScreen.storyboard */; };
-		C4C4D18C1D1BF6950091E6FB /* MKSToken.m in Sources */ = {isa = PBXBuildFile; fileRef = C4C4D18B1D1BF6950091E6FB /* MKSToken.m */; };
-		C4F3EB261D198E54005580E7 /* MKSTokenInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = C4F3EB251D198E54005580E7 /* MKSTokenInputView.m */; };
-		C4F3EB291D198E68005580E7 /* MKSTokenView.m in Sources */ = {isa = PBXBuildFile; fileRef = C4F3EB281D198E68005580E7 /* MKSTokenView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,12 +73,6 @@
 		65B16BC018BC26C9003AA819 /* CLToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLToken.h; path = CLTokenInputView/CLToken.h; sourceTree = "<group>"; };
 		65B16BC118BC26C9003AA819 /* CLToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLToken.m; path = CLTokenInputView/CLToken.m; sourceTree = "<group>"; };
 		65E86F811C407E3A0029E724 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		C4C4D18A1D1BF6950091E6FB /* MKSToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKSToken.h; sourceTree = "<group>"; };
-		C4C4D18B1D1BF6950091E6FB /* MKSToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKSToken.m; sourceTree = "<group>"; };
-		C4F3EB241D198E54005580E7 /* MKSTokenInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKSTokenInputView.h; sourceTree = "<group>"; };
-		C4F3EB251D198E54005580E7 /* MKSTokenInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKSTokenInputView.m; sourceTree = "<group>"; };
-		C4F3EB271D198E68005580E7 /* MKSTokenView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKSTokenView.h; sourceTree = "<group>"; };
-		C4F3EB281D198E68005580E7 /* MKSTokenView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKSTokenView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,12 +102,6 @@
 		65B16B7118BC16F6003AA819 = {
 			isa = PBXGroup;
 			children = (
-				C4F3EB241D198E54005580E7 /* MKSTokenInputView.h */,
-				C4F3EB251D198E54005580E7 /* MKSTokenInputView.m */,
-				C4F3EB271D198E68005580E7 /* MKSTokenView.h */,
-				C4F3EB281D198E68005580E7 /* MKSTokenView.m */,
-				C4C4D18A1D1BF6950091E6FB /* MKSToken.h */,
-				C4C4D18B1D1BF6950091E6FB /* MKSToken.m */,
 				65B16B8318BC16F6003AA819 /* CLTokenInputView */,
 				65B16B9C18BC16F7003AA819 /* CLTokenInputViewTests */,
 				65B16B7C18BC16F6003AA819 /* Frameworks */,
@@ -304,13 +289,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				65B16BBE18BC1D9E003AA819 /* CLBackspaceDetectingTextField.m in Sources */,
-				C4C4D18C1D1BF6950091E6FB /* MKSToken.m in Sources */,
 				65B16BAF18BC17D2003AA819 /* CLTokenInputView.m in Sources */,
 				65B16BB818BC1826003AA819 /* CLTokenInputViewController.m in Sources */,
 				65B16B8A18BC16F6003AA819 /* main.m in Sources */,
 				65B16B8E18BC16F6003AA819 /* CLAppDelegate.m in Sources */,
-				C4F3EB291D198E68005580E7 /* MKSTokenView.m in Sources */,
-				C4F3EB261D198E54005580E7 /* MKSTokenInputView.m in Sources */,
 				65B16BB318BC17EC003AA819 /* CLTokenView.m in Sources */,
 				65B16BC218BC26C9003AA819 /* CLToken.m in Sources */,
 			);

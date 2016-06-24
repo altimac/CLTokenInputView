@@ -10,8 +10,6 @@
 
 #import "CLBackspaceDetectingTextField.h"
 #import "CLTokenView.h"
-#import "MKSTokenView.h"
-#import "MKSToken.h"
 
 static CGFloat const HSPACE = 0.0;
 static CGFloat const TEXT_FIELD_HSPACE = 4.0; // Note: Same as CLTokenView.PADDING_X
@@ -193,7 +191,7 @@ static void commonInit(CLTokenInputView *self)
         if([self.delegate respondsToSelector:@selector(tokenInputView:tokensForText:)]) {
             NSArray *tokens = [self.delegate tokenInputView:self tokensForText:unprefixedText];
             BOOL lastTokenIsRecognized = NO;
-            for (MKSToken *token in tokens) {
+            for (CLToken *token in tokens) {
                 if(token.isRecognized) {
                     [self addToken:token];
                 }

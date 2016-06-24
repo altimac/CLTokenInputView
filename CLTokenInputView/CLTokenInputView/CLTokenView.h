@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CLTokenView : UIView <UIKeyInput>
 
+@property(strong, nonatomic, nonnull) CLToken *token;
 @property (weak, nonatomic, nullable) NSObject <CLTokenViewDelegate> *delegate;
 @property (assign, nonatomic) BOOL selected;
 @property (assign, nonatomic) BOOL hideUnselectedComma;

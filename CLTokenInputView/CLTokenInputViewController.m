@@ -7,9 +7,9 @@
 //
 
 #import "CLTokenInputViewController.h"
-
-#import "MKSToken.h"
-#import "MKSTokenView.h"
+#import "CLTokenInputView.h"
+#import "CLTokenView.h"
+#import "CLToken.h"
 
 @interface CLTokenInputViewController ()
 
@@ -102,12 +102,12 @@
 
 -(void)tokenInputView:(CLTokenInputView *)view willAddTokenView:(CLTokenView *)tokenView forToken:(CLToken *)token
 {
-    if([(MKSToken*)token isRecognized]) {
+    if([token isRecognized]) {
         // for the moment put some random/crazy colors on the tokenView
         tokenView.selectedTintColor = [UIColor lightGrayColor];
         tokenView.selectedBackgroundColor = [UIColor darkGrayColor];
         tokenView.tintColor = [UIColor whiteColor];
-        tokenView.backgroundColor = [(MKSToken*)token preferredColor];//[UIColor orangeColor];
+        tokenView.backgroundColor = [token preferredColor];//[UIColor orangeColor];
     }
     else {
         tokenView.selectedTintColor = [UIColor darkTextColor];
@@ -131,12 +131,12 @@
 
 - (CLToken *)tokenInputView:(CLTokenInputView *)view tokenForText:(NSString *)text
 {
-    __block MKSToken *token = nil;
+    __block CLToken *token = nil;
     [self.tokenMap enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
         NSString *tokenKey = key;
         UIColor *color = obj;
         if([tokenKey compare:text options:NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch] == NSOrderedSame) {
-            token = [[MKSToken alloc] initWithDisplayText:tokenKey context:nil];
+            token = [[CLToken alloc] initWithDisplayText:tokenKey context:nil];
             token.preferredColor = color;
             *stop = YES;
         }
@@ -147,7 +147,7 @@
 
 - (NSArray <CLToken*> *)tokenInputView:(CLTokenInputView *)view tokensForText:(NSString *)text
 {
-    NSMutableSet <MKSToken*> *tokens = [NSMutableSet set];
+    NSMutableSet <CLToken*> *tokens = [NSMutableSet set];
     BOOL shouldSkipOtherTokenizationCharacters = NO;
     // FIXME: there is a bug with multiple tokenizationCharacters as we may add some token in wrong sequence. But this should be rare
     
@@ -159,8 +159,8 @@
        // NSRange lastFoundLHSToken = NSMakeRange(0, 0);
         NSRange separatorRange = NSMakeRange(0, 0);
         
-        MKSToken *lhsToken;
-        MKSToken *rhsToken;
+        CLToken *lhsToken;
+        CLToken *rhsToken;
         
         do {
             lhsToken = nil;
@@ -171,8 +171,8 @@
             if(separatorRange.location == NSNotFound) {
                 NSString *tokenMapKey = nil;
                 // a sentence of one word
-                if((tokenMapKey = [self _isEntireSentenceAToken:processedText])) {
-                    lhsToken = [[MKSToken alloc] initWithDisplayText:processedText context:nil];
+                if((tokenMapKey = [self _entireSentenceRecognizedAsToken:processedText])) {
+                    lhsToken = [[CLToken alloc] initWithDisplayText:processedText context:nil];
                     lhsToken.recognized = YES;
                     lhsToken.preferredColor = self.tokenMap[tokenMapKey];
                     [tokens addObject:lhsToken];
@@ -188,8 +188,8 @@
                 NSString *rhs = [processedText substringWithRange:NSMakeRange(separatorRange.location+separatorRange.length, processedText.length-(separatorRange.location+separatorRange.length))];
 
                 NSString *tokenMapKey = nil;
-                if((tokenMapKey = [self _isEntireSentenceAToken:lhs])) {
-                    lhsToken = [[MKSToken alloc] initWithDisplayText:lhs context:nil];
+                if((tokenMapKey = [self _entireSentenceRecognizedAsToken:lhs])) {
+                    lhsToken = [[CLToken alloc] initWithDisplayText:lhs context:nil];
                     lhsToken.recognized = YES;
                     lhsToken.preferredColor = self.tokenMap[tokenMapKey];
                     [tokens addObject:lhsToken];
@@ -199,8 +199,8 @@
                     separatorRange = NSMakeRange(0, 0); // reset
                 }
                 
-                if(tokenMapKey = [self _isEntireSentenceAToken:rhs]) {
-                rhsToken = [[MKSToken alloc] initWithDisplayText:rhs context:nil];
+                if((tokenMapKey = [self _entireSentenceRecognizedAsToken:rhs])) {
+                rhsToken = [[CLToken alloc] initWithDisplayText:rhs context:nil];
                     rhsToken.recognized = YES;
                     rhsToken.preferredColor = self.tokenMap[tokenMapKey];
                     [tokens addObject:rhsToken];
@@ -214,11 +214,11 @@
         while(separatorRange.location != NSNotFound || (lhsToken != nil && rhsToken != nil));        
     }
     
-    // tokens maybe in the wrong order, so reorder it and form non recognized tokens now
-    NSMutableArray <MKSToken*> *orderedRecognizedTokens = [NSMutableArray array];
+    // tokens maybe in the wrong order, so reorder it and form non recognized token now
+    NSMutableArray <CLToken*> *orderedRecognizedTokens = [NSMutableArray array];
     
     if(tokens.count > 0) {
-        for (MKSToken *token in tokens) {
+        for (CLToken *token in tokens) {
             NSRange range = [text rangeOfString:token.displayText options:NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch];
             token.locationInText = range.location;
             NSAssert(range.location != NSNotFound, @"A *recognized* token can't be found in original text!?");
@@ -228,7 +228,7 @@
     }
     else {
         // form one big unrecognized token
-        MKSToken *allTextToken = [[MKSToken alloc] initWithDisplayText:text context:nil];
+        CLToken *allTextToken = [[CLToken alloc] initWithDisplayText:text context:nil];
         allTextToken.recognized = NO;
         [orderedRecognizedTokens addObject:allTextToken];
     }
@@ -236,11 +236,12 @@
     return orderedRecognizedTokens;
 }
 
--(NSString *)_isEntireSentenceAToken:(NSString *)sentence {
+// returns nil if sentence is not a token. Returns the "normalized" token if sentence is a recognized as a token (diacritic case insensitive)
+-(NSString *)_entireSentenceRecognizedAsToken:(NSString *)sentence {
     __block NSString *token = nil;
     [self.tokenMap enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
         NSString *tokenKey = key;
-        UIColor *color = obj;
+        //UIColor *color = obj;
         if([tokenKey compare:sentence options:NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch] == NSOrderedSame) {
             token = tokenKey;
             *stop = YES;

@@ -16,6 +16,7 @@ static CGFloat const PADDING_Y = 2.0;
 static NSString *const UNSELECTED_LABEL_FORMAT = @"%@,";
 static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
 
+#define FORCE_HIDE_UNSELECTED_COMMAS 1 // AH, I want to always hide unselected commas
 
 @interface CLTokenView ()
 
@@ -72,6 +73,7 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
         [self addSubview:self.selectedLabel];
         self.selectedLabel.hidden = YES;
 
+        _token = token;
         self.displayText = token.displayText;
 
         self.hideUnselectedComma = NO;
@@ -143,6 +145,10 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
 
 - (void)setHideUnselectedComma:(BOOL)hideUnselectedComma
 {
+#if FORCE_HIDE_UNSELECTED_COMMAS
+    hideUnselectedComma = YES;
+#endif
+    
     if (_hideUnselectedComma == hideUnselectedComma) {
         return;
     }
