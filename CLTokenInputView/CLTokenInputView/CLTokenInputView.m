@@ -11,8 +11,8 @@
 #import "CLBackspaceDetectingTextField.h"
 #import "CLTokenView.h"
 
-static CGFloat const HSPACE = 0.0;
-static CGFloat const TEXT_FIELD_HSPACE = 4.0; // Note: Same as CLTokenView.PADDING_X
+static CGFloat const HSPACE = 2.0;
+static CGFloat const TEXT_FIELD_HSPACE = 0.0; // AH editing textfield should be very close to previous bubble
 static CGFloat const VSPACE = 4.0;
 static CGFloat const MINIMUM_TEXTFIELD_WIDTH = 10;//56.0; // AH changed because I find this too conservative
 static CGFloat const PADDING_TOP = 10.0;

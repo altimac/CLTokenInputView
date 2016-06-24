@@ -10,7 +10,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-static CGFloat const PADDING_X = 4.0;
+static CGFloat const PADDING_X = 6.0;
 static CGFloat const PADDING_Y = 2.0;
 
 static NSString *const UNSELECTED_LABEL_FORMAT = @"%@,";
@@ -39,7 +39,7 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
         
         self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
         self.backgroundView.backgroundColor = self.backgroundColor?self.backgroundColor:[UIColor clearColor];
-        self.backgroundView.layer.cornerRadius = 5.0;
+        self.backgroundView.layer.cornerRadius = 13.0;
         [self addSubview:self.backgroundView];
         self.backgroundView.hidden = NO;
         
@@ -62,7 +62,7 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
 
         self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
         self.selectedBackgroundView.backgroundColor = self.selectedBackgroundColor?self.selectedBackgroundColor:[UIColor blueColor];
-        self.selectedBackgroundView.layer.cornerRadius = 5.0;
+        self.selectedBackgroundView.layer.cornerRadius = 13.0;
         [self addSubview:self.selectedBackgroundView];
         self.selectedBackgroundView.hidden = YES;
 

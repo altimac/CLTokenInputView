@@ -62,7 +62,7 @@
     [infoButton addTarget:self action:@selector(onFieldInfoButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     self.secondTokenInputView.placeholderText = @"Marks tests here...";
-    self.secondTokenInputView.fieldFont = [UIFont fontWithName:@"Georgia" size:17];
+    self.secondTokenInputView.fieldFont = [UIFont fontWithName:@"BrandonGrotesque-Medium" size:16];
     //self.secondTokenInputView.fieldName = NSLocalizedString(@", \" \", return:", nil);
     self.secondTokenInputView.tokenizationCharacters = [NSSet setWithObjects:@",",@" ", nil];
     self.secondTokenInputView.drawBottomBorder = YES;
@@ -74,6 +74,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)cancelButtonActivated:(id)sender {
+    [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - CLTokenInputViewDelegate
