@@ -42,8 +42,8 @@ static void commonInit(CLTokenInputView *self)
 {
     self.textField = [[CLBackspaceDetectingTextField alloc] initWithFrame:self.bounds];
     self.textField.backgroundColor = [UIColor clearColor];
-    self.textField.keyboardType = UIKeyboardTypeEmailAddress;
-    self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.textField.keyboardType = UIKeyboardTypeDefault;
+    self.textField.autocorrectionType = UITextAutocorrectionTypeDefault;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.textField.delegate = self;
     self.additionalTextFieldYOffset = 0.0;

@@ -18,6 +18,9 @@
             <subviews>
                 <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AWg-J5-22e">
                     <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="yxs-ck-t5C"/>
+                    </constraints>
                     <items>
                         <navigationItem title="Token Test UI" id="NhD-9j-7Eg">
                             <barButtonItem key="rightBarButtonItem" title="Cancel" id="NNk-CO-CQ1">
@@ -46,12 +49,9 @@
                         <outlet property="delegate" destination="-1" id="64K-yG-8YP"/>
                     </connections>
                 </tableView>
-                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uLk-uQ-cin">
-                    <rect key="frame" x="8" y="272" width="304" height="200"/>
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="245" ambiguous="YES" misplaced="YES" editable="NO" usesAttributedText="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uLk-uQ-cin">
+                    <rect key="frame" x="8" y="200" width="304" height="200"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="200" id="16Q-oe-5bx"/>
-                    </constraints>
                     <attributedString key="attributedText">
                         <fragment>
                             <string key="content">- Use space, comma or return as separator.
@@ -85,6 +85,7 @@ Cg
                 <constraint firstAttribute="trailing" secondItem="AWg-J5-22e" secondAttribute="trailing" id="4xd-vS-2dX"/>
                 <constraint firstAttribute="trailing" secondItem="yVy-7A-UfW" secondAttribute="trailing" id="8Y3-sh-NR3"/>
                 <constraint firstItem="yVy-7A-UfW" firstAttribute="top" secondItem="AWg-J5-22e" secondAttribute="bottom" constant="1" id="AOn-Q3-5q7"/>
+                <constraint firstItem="uLk-uQ-cin" firstAttribute="top" secondItem="yVy-7A-UfW" secondAttribute="bottom" priority="999" constant="1" id="GSd-x0-Zak"/>
                 <constraint firstItem="yVy-7A-UfW" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="IXa-EX-P3L"/>
                 <constraint firstAttribute="bottom" secondItem="ngG-oE-HZd" secondAttribute="bottom" id="Ixl-wG-sGd"/>
                 <constraint firstItem="AWg-J5-22e" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="NCt-pN-NQO"/>
